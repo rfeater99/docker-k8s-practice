@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Todo Sample App - READ(Detail) -</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <h1>Todo</h1>
+    <table>
+      <tr>
+        <th>Column</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>ID</td>
+        <td><%= row.id %></td>
+      </tr>
+      <tr>
+        <td>Title</td>
+        <td><%= row.title %></td>
+      </tr>
+      <tr>
+        <td>Image</td>
+        <% if (row.image_url) { %>
+        <td><img src="<%= imageUrlEndpoint %><%= row.image_url %>" /></td>
+        <% } else { %>
+        <td>No image.</td>
+        <% } %>
+      </tr>
+    </table>
+    <a href="/todos">Back to list.</a>
+  </body>
+</html>
+

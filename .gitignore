@@ -1,0 +1,5 @@
+.DS_Store
+
+# secret設定は除外
+secret.yml
+

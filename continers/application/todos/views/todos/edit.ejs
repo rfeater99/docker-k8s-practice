@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Todo Sample App - <%= row ? 'UPDATE' : 'CREATE' %> -</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <h1><%= row ? 'Edit' : 'Create' %> todo</h1>
+    <form method="POST" action="/todos/edit" enctype="multipart/form-data">
+      <table>
+        <tr>
+          <th>Column</th>
+          <th>Value</th>
+        </tr>
+        <% if (row) { %>
+        <input type="hidden" name="id" value="<%= row.id %>" />
+        <% } %>
+        <tr>
+          <td>Title</td>
+          <td><input type="text" name="title" value="<%= row ? row.title : '' %>" /></td>
+        </tr>
+        <tr>
+          <td>image</td>
+          <td><input type="file" name="image" value"" /></td>
+        </tr>
+      </table>
+      <input type="submit" value="<%= row ? 'Edit' : 'Create' %>" />
+    </form>
+  </body>
+</html>
+

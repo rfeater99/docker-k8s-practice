@@ -1,0 +1,94 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    role: application
+  name: todo-application
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      role: application-instance
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        role: application-instance
+    spec:
+      containers:
+      - name: node-application
+        image: yusaku70/myapps:todo_app0.0.1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+        env:
+        - name: MYSQL_HOST
+          value: todo-db-service
+        - name: MYSQL_PORT
+          value: "3306"
+        - name: MYSQL_USER
+          value: sampleUser
+        - name: MYSQL_PASS
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: mysql-password
+        - name: MYSQL_DB
+          value: sampleDb
+        - name: AWS_ACCESS_KEY
+          value: minio
+        - name: AWS_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: s3-secret
+              key: secret-key
+        - name: AWS_REGION
+          value: us-east-1
+        - name: AWS_ENDPOINT
+          value: http://todo-s3-service
+        - name: AWS_PORT
+          value: "80"
+        - name: AWS_S3_BUCKET
+          value: kubernetes-sample-bucket
+        - name: REDIS_HOST
+          value: todo-cache-service
+        - name: REDIS_PORT
+          value: "6379"
+        - name: IMAGE_ENDPOINT
+          value: http://192.168.99.100:30468
+      imagePullSecrets:
+      - name: my-registry-credential
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: todo-application-service
+  labels:
+    role: application-service
+  namespace: default
+spec:
+  ports:
+  - port: 8080
+    targetPort: 3000
+  selector:
+    role: application-instance
+  type: NodePort
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: reverse-proxy
+spec:
+  rules:
+  - host: todo-application-service
+    http:
+      paths:
+      - backend:
+          serviceName: todo-application-service
+          servicePort: 8080
+
